@@ -14,7 +14,7 @@ function ChatDashboard() {
     }, []);
 
     return (
-        <section className="flex  h-full min-h-screen w-full ">
+        <section className="flex h-[90vh] md:h-full min-h-screen w-full ">
             <div className={`w-full lg:w-[25%] border-r border-gray-600 ${isChatOpen ? "hidden lg:block" : "block"}`}>
                 <ChatSideBar />
             </div>
