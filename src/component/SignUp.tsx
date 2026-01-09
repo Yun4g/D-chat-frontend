@@ -60,6 +60,8 @@ function SignUp({setIsSignIn} : signUpProp) {
         if (!password) newErrors.password = 'Password is required';
         else if (password.length < 6) newErrors.password = 'Password must be at least 6 characters';
 
+        if(!profilePicture) newErrors.password = 'profile Picture is required';
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -89,7 +91,8 @@ function SignUp({setIsSignIn} : signUpProp) {
 
             if (res) {
                 setModalVariant("success");
-                setModalMessage(res.message ?? "Signup successful!");   
+                setModalMessage(res.message ?? "Signup successful!");  
+                setIsSignIn(true) 
             }
         } catch (error) {
             const msg = error instanceof Error ? error.message : "Signup failed";
