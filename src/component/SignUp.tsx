@@ -81,6 +81,9 @@ function SignUp({setIsSignIn} : signUpProp) {
             formData.append("avatarUrl", profilePicture);
         }
 
+
+
+        
         try {
             const res = await signUp.signUp(formData);
             console.log("Signup response in component:", res);

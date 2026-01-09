@@ -27,19 +27,19 @@ function ChatRequest() {
 
 
 
-    const handleOpenChat = (user : FriendsType ) => {
+    const handleOpenChat = (user: FriendsType) => {
         dispatch(openChat());
-         dispatch(setSelectedUser({
-             _id: user.user?._id,
-             userName:user.user?.userName,
-             avatarUrl: user.user?.avatarUrl,
-             roomId: user?.roomId,
-         }))
+        dispatch(setSelectedUser({
+            _id: user.user?._id,
+            userName: user.user?.userName,
+            avatarUrl: user.user?.avatarUrl,
+            roomId: user?.roomId,
+        }))
     };
 
     console.log("friends", friends)
     const filteredDisplay = friends.filter(friend =>
-        friend.user.userName.toLowerCase().includes(search.toLowerCase())
+        friend.user?.userName?.toLowerCase().includes(search.toLowerCase())
     );
 
     return (
@@ -93,7 +93,7 @@ function ChatRequest() {
                         className="px-3 space-y-2">
                         {filteredDisplay.map((friend) => (
                             <div
-                                onClick={()=>handleOpenChat(friend)}
+                                onClick={() => handleOpenChat(friend)}
                                 key={friend._id}
                                 className="p-2 rounded-lg bg-gray-800 cursor-pointer hover:bg-gray-700 flex  gap-3 items-center transition"
                             >
