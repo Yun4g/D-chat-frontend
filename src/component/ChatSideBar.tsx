@@ -46,7 +46,7 @@ function ChatSideBar() {
 
 
     return (
-        <aside aria-label="Sidebar" className="w-full min-h-screen text-white">
+        <aside aria-label="Sidebar" className="w-full h-full max-h-screen overflow-y-scroll no-scrollbar   text-white">
             <div className="p-2 flex justify-between items-center border-b border-gray-700">
 
                 <div className="flex items-center gap-2">

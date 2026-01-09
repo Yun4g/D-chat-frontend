@@ -57,7 +57,7 @@ function App() {
   return (
 
 
-  <section className='bg-[#051222] min-h-screen '>
+  <section className='bg-[#051222] h-full min-h-screen '>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Auth />} />

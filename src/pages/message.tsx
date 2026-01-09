@@ -9,9 +9,12 @@ import { socket } from "@/lib/socket";
 
 
 interface ChatMessage {
+    _id: string;
     message: string;
     senderId: string;
-    createdAt: Date
+    roomId: string;
+    createdAt: string | Date;
+    pending?: boolean;
 }
 
 function Message() {
@@ -41,7 +44,12 @@ function Message() {
         }
     };
 
-
+    useEffect(() => {
+        if (inputRef.current) {
+            inputRef.current.style.height = "auto";
+            inputRef.current.style.height = inputRef.current.scrollHeight + "px";
+        }
+    }, [message]);
 
     useEffect(() => {
         socket.on("receiveMessage", (data) => {
@@ -52,11 +60,15 @@ function Message() {
         socket.on("loadMessages", (messages) => {
             setDisplayMessages(messages);
         });
+
+
         return () => {
             socket.off("receiveMessage");
             socket.off("loadMessages");
         };
     }, []);
+
+
 
 
 
@@ -133,12 +145,17 @@ function Message() {
         })
 
         setMessage("")
+
+
+
     }
+
+
 
 
     return (
         <section className="flex flex-col h-full w-full max-h-screen text-white bg-[#051222]">
- 
+
             <header className="flex p-4 border-b border-gray-600 justify-between items-center bg-[#071624]">
                 <div className="flex items-center gap-3">
                     <div
@@ -159,18 +176,18 @@ function Message() {
                 </div>
             </header>
 
-    
-            <div className="flex-1 overflow-y-auto bg-[#051222] p md:p-4">
+
+            <div className="flex-1 overflow-y-auto bg-[#051222]  md:p-4">
 
 
-                <div className="flex-1  justify-end  h-full overflow-y-auto p-4 space-y-2">
+                <div className="flex-1  justify-end  h-full overflow-y-auto no-scrollbar  p-4 space-y-2">
                     {displayMessages.map((msg, index) =>
                     (
                         <div
 
                             key={index}
-                            className={`w-fit md:text-lg flex justify-between gap-3  px-3 py-2 rounded-lg 
-                                ${msg.senderId === User ? "ml-auto bg-[#09305e]  mt-auto" : "mr-auto bg-gray-700 mt-auto"
+                            className={`w-fit text-xs md:text-base flex justify-between gap-3  px-3 py-2 rounded-lg 
+                                ${msg.senderId === User ? "ml-auto bg-[#09305e]  " : "mr-auto bg-gray-700 mt-auto"
                                 }`}
                         >
                             {msg.message}
@@ -188,10 +205,11 @@ function Message() {
 
             </div>
 
-            {/* Input Area */}
-            <footer className="p-3 border-t border-gray-700 bg-[#1e1e1e]">
-                <div className="flex items-center gap-2 max-w-6xl mx-auto relative">
-                    <div className="relative">
+
+            <footer className="border-t border-gray-700 bg-[#1e1e1e]">
+                <div className="flex items-center gap-2 px-3 py-2 max-w-6xl mx-auto w-full relative">
+
+                    <div className="relative flex-shrink-0">
                         <button
                             type="button"
                             onClick={() => setShowEmoji(!showEmoji)}
@@ -211,9 +229,9 @@ function Message() {
                         )}
                     </div>
 
-                    <input
+
+                    <textarea
                         ref={inputRef}
-                        type="text"
                         value={message}
                         onChange={(e) => {
                             setMessage(e.target.value);
@@ -222,22 +240,25 @@ function Message() {
                         onKeyUp={updateCursor}
                         onClick={updateCursor}
                         placeholder="Type a message..."
-                        className="flex-1 bg-gray-800 rounded-full px-5 py-2.5 outline-none focus:ring-2 focus:ring-blue-500 text-white transition-all"
-                    />
+                        className="flex-1 min-w-0 bg-gray-800 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500 text-white transition-all resize-none"
+                        rows={1} // initial height
+                    ></textarea>
+
 
                     <button
                         type="button"
                         disabled={!message.trim()}
                         onClick={handleSendMessage}
-                        className={`p-3 rounded-full transition-all ${message.trim()
-                            ? "bg-blue-600 hover:bg-blue-700 scale-100"
-                            : "bg-gray-600 cursor-not-allowed opacity-50 scale-95"
+                        className={`flex-shrink-0 p-3 rounded-full transition-all ${message.trim()
+                            ? "bg-blue-600 hover:bg-blue-700"
+                            : "bg-gray-600 cursor-not-allowed opacity-50"
                             }`}
                     >
                         <MdSend className="text-xl text-white" />
                     </button>
                 </div>
             </footer>
+
         </section>
     );
 }

@@ -83,11 +83,13 @@ function SignUp({setIsSignIn} : signUpProp) {
             const res = await signUp.signUp(formData);
             console.log("Signup response in component:", res);
             if (signUp.data) {
-                setModalVariant("success");
-                setModalMessage(res.message ?? "Signup successful!");
-
                 socket.emit("joinRoom", signUp.data._id)
                 setTimeout(() => setIsSignIn(true), 1700);
+            }
+
+            if (res) {
+                setModalVariant("success");
+                setModalMessage(res.message ?? "Signup successful!");   
             }
         } catch (error) {
             const msg = error instanceof Error ? error.message : "Signup failed";
