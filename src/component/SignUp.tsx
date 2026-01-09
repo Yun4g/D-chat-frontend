@@ -97,7 +97,7 @@ function SignUp({setIsSignIn} : signUpProp) {
                 }, 4000);
             }
         } catch (error) {
-            const msg = error instanceof Error ? error.message : "Signup failed";
+            const msg = error instanceof Error ? error.message  : "Signup failed";
             setModalVariant("error");
             setModalMessage(msg);
         } 
