@@ -2,8 +2,21 @@ import axios from 'axios';
 import React from 'react';
 
 
+ interface UserTypes{
+  _id:string
+  avatarUrl: string;
+  userName: string;
+  roomId: string
+ }
+
+export interface FriendsType {
+  _id: string;
+  user: UserTypes;
+  roomId: string
+}
+
 export const useChat = () => {
-  const [friends, setFriends] = React.useState([]);
+  const [friends, setFriends] = React.useState<FriendsType[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
 

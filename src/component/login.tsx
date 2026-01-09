@@ -35,7 +35,7 @@ function Login() {
 
         try {
             const res = await login(email, password);
-
+            if (!res.user || !res.user._id) throw new Error("Invalid user data");
             setModalVariant('success');
             setModalMessage('Login successful! Redirecting...');
 

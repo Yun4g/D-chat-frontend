@@ -2,13 +2,18 @@ import React from 'react';
 import { Camera, EyeClosed, EyeIcon, Lock, User } from "lucide-react";
 import { motion } from 'framer-motion';
 import useSignUp from '@/hooks/useSignup';
-import { useNavigate } from 'react-router-dom';
+
 import Modal from './Modal';
+import { socket } from '@/lib/socket';
 
 
 
+interface signUpProp {
+    setIsSignIn: React.Dispatch<React.SetStateAction<boolean>>
+}
 
-function SignUp() {
+
+function SignUp({setIsSignIn} : signUpProp) {
     const profileRef = React.useRef<HTMLInputElement>(null);
     const [profilePicture, setProfilePicture] = React.useState<File | null>(null);
     const [showPassword, setShowPassword] = React.useState(false);
@@ -16,7 +21,6 @@ function SignUp() {
     const [userName, setUserName] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
-    const navigate = useNavigate();
     const [errors, setErrors] = React.useState<{ [k: string]: string }>({});
     const [modalMessage, setModalMessage] = React.useState<string | null>(null);
     const [modalVariant, setModalVariant] = React.useState<'error' | 'success'>('error');
@@ -78,10 +82,12 @@ function SignUp() {
         try {
             const res = await signUp.signUp(formData);
             console.log("Signup response in component:", res);
-            if (signUp.data?.User) {
+            if (signUp.data) {
                 setModalVariant("success");
                 setModalMessage(res.message ?? "Signup successful!");
-                setTimeout(() => navigate("/"), 1700);
+
+                socket.emit("joinRoom", signUp.data._id)
+                setTimeout(() => setIsSignIn(true), 1700);
             }
         } catch (error) {
             const msg = error instanceof Error ? error.message : "Signup failed";

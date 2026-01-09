@@ -34,7 +34,7 @@ function Auth() {
                 </div>
 
                 <div className='mt-4 md:mt-10'>
-                    {isSignIn ? <Login /> : <SignUp />}
+                    {isSignIn ? <Login /> : <SignUp setIsSignIn={setIsSignIn}  />}
                 </div>
 
             </main>

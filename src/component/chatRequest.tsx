@@ -1,19 +1,23 @@
-import { useChat } from "@/hooks/useChat";
-import React, { useEffect } from "react";
+import { FriendsType, useChat } from "@/hooks/useChat";
+import React, { useEffect, useState } from "react";
 import {
     MdSearch,
     MdErrorOutline,
     MdPersonOff,
     MdPersonAdd,
 } from "react-icons/md";
-
 import LoadingSkeleton from "./loadingSkeleton";
+import { useDispatch, } from "react-redux";
+import { openChat } from "@/store/slice/uiSlice";
+import { setSelectedUser } from "@/store/slice/selectedUserSlice";
 
 function ChatRequest() {
-    const userId = localStorage.getItem('userId')
+    const userId = localStorage.getItem('userId');
     console.log("UserID in ChatRequest:", userId);
+    const dispatch = useDispatch();
 
     const { friends, loading, error, getFriends } = useChat();
+    const [search, setSearch] = useState<string>("")
 
     useEffect(() => {
         if (userId) {
@@ -23,6 +27,20 @@ function ChatRequest() {
 
 
 
+    const handleOpenChat = (user : FriendsType ) => {
+        dispatch(openChat());
+         dispatch(setSelectedUser({
+             _id: user.user?._id,
+             userName:user.user?.userName,
+             avatarUrl: user.user?.avatarUrl,
+             roomId: user?.roomId,
+         }))
+    };
+
+    console.log("friends", friends)
+    const filteredDisplay = friends.filter(friend =>
+        friend.user.userName.toLowerCase().includes(search.toLowerCase())
+    );
 
     return (
         <div>
@@ -35,6 +53,8 @@ function ChatRequest() {
                     />
                     <input
                         type="text"
+                        onChange={(e) => setSearch(e.target.value)}
+                        value={search}
                         placeholder="Search chats"
                         className="w-full pl-10 pr-3 py-2 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
                     />
@@ -69,15 +89,26 @@ function ChatRequest() {
                 )}
 
                 {!loading && !error && friends.length > 0 && (
-                    <div className="px-3 space-y-2">
-                        {/* {friends.map((friend) => (
-              <div
-                key={friend._id}
-                className="p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition"
-              >
-                {friend.userName}
-              </div>
-            ))} */}
+                    <div
+                        className="px-3 space-y-2">
+                        {filteredDisplay.map((friend) => (
+                            <div
+                                onClick={()=>handleOpenChat(friend)}
+                                key={friend._id}
+                                className="p-2 rounded-lg bg-gray-800 cursor-pointer hover:bg-gray-700 flex  gap-3 items-center transition"
+                            >
+                                <div className="h-10 w-10 rounded-full overflow-hidden">
+                                    <img src={friend.user?.avatarUrl} className="h-full w-full object-cover" alt="" />
+                                </div>
+                                <p>
+                                    {friend.user?.userName}
+                                    <span>
+                                        {/* this where the message will show like whatsapp */}
+                                    </span>
+                                </p>
+
+                            </div>
+                        ))}
                     </div>
                 )}
             </div>

@@ -11,13 +11,17 @@ export type SignUpPayload = {
 };
 
 export type User = {
-  id?: string;
   userName: string;
   email: string;
+  _id: string;
+  avatarUrl?: string;
 };
 
 export type SignUpResponse = {
-  User?: User;
+   userName: string;
+  email: string;
+  _id: string;
+  avatarUrl?: string;
   message?: string;
 };
 

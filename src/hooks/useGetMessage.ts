@@ -11,13 +11,13 @@ export interface User {
   requestStatus: "pending" | "accepted" | "rejected";
 }
 
-export const useFriends = () => {
+export const useGetMessage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [friends, setFriends] = useState<User[]>([]);
+  const [message, setMessage] = useState<User[]>([]);
   const user =  useSelector((state: RootState) => state.user.userId);
 
-  const getFriends = async () => {
+  const getMessage = async () => {
     setLoading(true);
     setError(null);
      const token = localStorage.getItem('token');
@@ -31,9 +31,9 @@ export const useFriends = () => {
       );
 
       if (res.data && res.data.users) {
-        setFriends(res.data.users);
+        setMessage(res.data.users);
       } else {
-        setFriends([]);
+        setMessage([]);
       }
 
       setLoading(false);
@@ -51,5 +51,5 @@ export const useFriends = () => {
     }
   };
 
-  return { getFriends, friends, loading, error };
+  return { getMessage, message, loading, error };
 };
