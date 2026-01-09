@@ -92,7 +92,9 @@ function SignUp({setIsSignIn} : signUpProp) {
             if (res) {
                 setModalVariant("success");
                 setModalMessage(res.message ?? "Signup successful!");  
-                setIsSignIn(true) 
+                setTimeout(() => {
+                     setIsSignIn(true) 
+                }, 4000);
             }
         } catch (error) {
             const msg = error instanceof Error ? error.message : "Signup failed";
