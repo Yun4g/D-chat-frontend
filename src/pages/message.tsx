@@ -156,7 +156,7 @@ function Message() {
     return (
         <section className="flex flex-col h-full w-full max-h-screen text-white bg-[#051222]">
 
-            <header className="flex p-4 border-b border-gray-600 justify-between items-center bg-[#071624]">
+            <header className="flex md:p-4 border-b border-gray-600 justify-between items-center bg-[#071624]">
                 <div className="flex items-center gap-3">
                     <div
                         onClick={() => dispatch(closeChat())}
@@ -231,7 +231,7 @@ function Message() {
 
 
                     <textarea
-                        ref={inputRef}
+
                         value={message}
                         onChange={(e) => {
                             setMessage(e.target.value);
@@ -240,7 +240,7 @@ function Message() {
                         onKeyUp={updateCursor}
                         onClick={updateCursor}
                         placeholder="Type a message..."
-                        className="flex-1 min-w-0 bg-gray-800 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500 text-white transition-all resize-none"
+                        className="flex-1 min-w- h-16 bg-gray-800 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500 text-white transition-all resize-none"
                         rows={1} // initial height
                     ></textarea>
 
