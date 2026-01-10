@@ -34,15 +34,17 @@ function Message() {
     const [cursorPosition, setCursorPosition] = useState<number>(0);
     console.log(cursorPosition)
 
-    const inputRef = useRef<HTMLInputElement>(null);
     const emojiRef = useRef<HTMLDivElement>(null);
 
+
+    const inputRef = useRef<HTMLTextAreaElement>(null);
 
     const updateCursor = () => {
         if (inputRef.current) {
             setCursorPosition(inputRef.current.selectionStart ?? 0);
         }
     };
+
 
     useEffect(() => {
         if (inputRef.current) {
@@ -174,7 +176,7 @@ function Message() {
             </header>
 
 
-            <div className="flex-1 overflow-y-auto bg-[#051222]  md:p-4">
+            <div className="flex overflow-y-auto bg-[#051222]  md:p-4">
 
 
                 <div className="flex-1  justify-end  h-full overflow-y-auto no-scrollbar  p-4 space-y-2">
@@ -203,8 +205,8 @@ function Message() {
             </div>
 
 
-            <footer className="border-t border-gray-700 bg-[#1e1e1e]">
-                <div className="flex items-center gap-2 px-3 py-2 max-w-6xl mx-auto w-full relative">
+            <footer className="border-t border-gray-700 bg-[#1e1e1e] p-2 md:p-4 flex-shrink-0">
+                <div className="flex items-end gap-2 max-w-6xl mx-auto w-full relative">
 
                     <div className="relative flex-shrink-0">
                         <button
@@ -226,9 +228,8 @@ function Message() {
                         )}
                     </div>
 
-
                     <textarea
-
+                        ref={inputRef}
                         value={message}
                         onChange={(e) => {
                             setMessage(e.target.value);
@@ -237,24 +238,23 @@ function Message() {
                         onKeyUp={updateCursor}
                         onClick={updateCursor}
                         placeholder="Type a message..."
-                        className="flex-1 min-w- h-16 bg-gray-800 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500 text-white transition-all resize-none"
-                        rows={1} // initial height
+                        className="flex-1 min-h-[40px] max-h-36 bg-gray-800 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500 text-white transition-all resize-none overflow-y-auto"
+                        rows={1}
                     ></textarea>
 
-
+                    {/* Send Button */}
                     <button
                         type="button"
                         disabled={!message.trim()}
                         onClick={handleSendMessage}
-                        className={`flex-shrink-0 p-3 rounded-full transition-all ${message.trim()
-                            ? "bg-blue-600 hover:bg-blue-700"
-                            : "bg-gray-600 cursor-not-allowed opacity-50"
+                        className={`flex-shrink-0 p-3 rounded-full transition-all ${message.trim() ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-600 cursor-not-allowed opacity-50"
                             }`}
                     >
                         <MdSend className="text-xl text-white" />
                     </button>
                 </div>
             </footer>
+
 
         </section>
     );
