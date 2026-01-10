@@ -46,6 +46,9 @@ function Message() {
     };
 
 
+
+
+    
     useEffect(() => {
         if (inputRef.current) {
             inputRef.current.style.height = "auto";
