@@ -27,7 +27,7 @@ const Modal: React.FC<Props> = ({ visible, message, variant = 'error', onClose }
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -120, opacity: 0 }}
             transition={{ duration: 0.35 }}
-            className="fixed md:left-1/2 transform -translate-x-1/2 top-6 z-50 w-full max-w-lg px-4"
+            className="fixed left-0 md:left-1/2 transform -translate-x-1/2 top-6 z-50 w-full md:max-w-lg px-4"
           >
             <div className={`${variant === 'error' ? 'bg-red-600' : 'bg-green-600'} text-white rounded-lg shadow-lg p-4 flex items-start gap-4`}>
               <div className="flex-1">

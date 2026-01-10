@@ -29,7 +29,7 @@ function ChatSideBar() {
             case 'notifications':
                 return <Notification />;
             case 'friend request':
-                return <FriendRequest />;
+                return <FriendRequest  />;
             case 'Find Friends':
                 return <FindFriends />;
             default:

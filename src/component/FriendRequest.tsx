@@ -7,6 +7,8 @@ import LoadingSkeleton from "./loadingSkeleton";
 import Modal from "./Modal";
 import { MdErrorOutline, MdPersonAdd, MdPersonOff } from "react-icons/md";
 import { AxiosError } from "axios";
+import { useDispatch } from "react-redux";
+import { setActiveTab } from "@/store/slice/activeTabsSlice";
 
 
 
@@ -42,7 +44,7 @@ function FriendRequest() {
 
   const senderRequests = data?.senderRequest || [];
 
-
+   const dispatch = useDispatch();
 
 
 
@@ -89,6 +91,10 @@ function FriendRequest() {
     }
   };
 
+     const navigateToFindFriends= ()=> {
+            dispatch(setActiveTab("Find Friends"))
+      }
+
   if (loadingRequest) return <LoadingSkeleton />;
 
   return (
@@ -106,7 +112,9 @@ function FriendRequest() {
           <MdPersonOff size={40} />
           <p className="mt-2 text-sm text-white">No Requests</p>
 
-          <button className="flex items-center gap-2 mt-3 bg-blue-600 hover:bg-blue-700 transition px-4 py-2 rounded-md text-sm font-medium text-white">
+          <button 
+            onClick={navigateToFindFriends}
+          className="flex items-center gap-2 mt-3 bg-blue-600 hover:bg-blue-700 transition px-4 py-2 rounded-md text-sm font-medium text-white">
             Find Friends
             <MdPersonAdd size={22} />
           </button>
