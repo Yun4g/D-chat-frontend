@@ -154,7 +154,7 @@ function Message() {
 
 
     return (
-        <section className="flex flex-col h-full w-full max-h-screen text-white bg-[#051222]">
+        <section className="flex flex-col h-full w-full   text-white bg-[#051222]">
 
             <header className="flex md:p-4 border-b border-gray-600 justify-between items-center bg-[#071624]">
                 <div className="flex items-center gap-3">
