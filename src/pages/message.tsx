@@ -179,7 +179,7 @@ function Message() {
             </header>
 
 
-            <div className="flex overflow-y-auto bg-[#051222]  md:p-4">
+            <div className="flex-1 overflow-y-auto bg-[#051222]  md:p-4">
 
 
                 <div className="flex-1  justify-end  h-full overflow-y-auto no-scrollbar  p-4 space-y-2">
