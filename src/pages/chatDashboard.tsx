@@ -1,26 +1,29 @@
 import ChatSideBar from "@/component/ChatSideBar";
 import { useNotifications } from "@/hooks/useNotification";
-import React from "react";
+import React, { useEffect } from "react";
 import Message from "./message";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
 function ChatDashboard() {
     const { getNotifications } = useNotifications();
-    const isChatOpen = useSelector( (state: RootState) => state.UiSlice.isChatOpen);
+    const isChatOpen = useSelector(
+        (state: RootState) => state.UiSlice.isChatOpen
+    );
 
-    React.useEffect(() => {
+    useEffect(() => {
         getNotifications();
     }, []);
 
     return (
-        <section className="flex  h-full min-h-screen w-full  overflow-x-hidden">
-            <div className={`w-full lg:w-[25%] md:border-r border-gray-600 ${isChatOpen ? "hidden lg:block" : "block"}`}>
+        <section className="flex h-screen w-full overflow-hidden">
+            <aside className={` w-full lg:w-[25%] border-r border-gray-600 overflow-y-auto no-scrollbar  ${isChatOpen ? "hidden lg:block" : "block"} `}>
                 <ChatSideBar />
-            </div>
-            <div  className={`w-full lg:w-[75%] ${isChatOpen ? "block" : "hidden lg:flex"}`}>
+            </aside>
+
+            <main className={`w-full lg:w-[75%] flex flex-col ${isChatOpen ? "block" : "hidden lg:flex"} `}>
                 <Message />
-            </div>
+            </main>
         </section>
     );
 }

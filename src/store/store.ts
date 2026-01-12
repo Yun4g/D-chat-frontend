@@ -4,6 +4,7 @@ import ActiveTab from "./slice/activeTabsSlice";
 import Notification from "./slice/notificationSlice";
 import uiSlice from "./slice/uiSlice"
 import selectedUser from "./slice/selectedUserSlice"
+import recentMessage from "./slice/recentMessageSlice"
 
 import {
   persistStore,
@@ -23,13 +24,14 @@ const rootReducer = combineReducers({
   activeTab: ActiveTab,
   notification: Notification,
   UiSlice:  uiSlice,
-  selectedUser: selectedUser
+  selectedUser: selectedUser,
+  recentMessage: recentMessage
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["user", "activeTab", "notification", "selectedUser", "UiSlice" ],
+  whitelist: ["user", "activeTab", "notification", "selectedUser", "UiSlice", "recentMessage" ],
 };
 
 

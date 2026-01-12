@@ -5,6 +5,8 @@ import { MdArrowBack, MdSend } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react";
 import { socket } from "@/lib/socket";
+import { setRecentMessage } from "@/store/slice/recentMessageSlice";
+
 
 
 
@@ -33,22 +35,35 @@ function Message() {
     const [showEmoji, setShowEmoji] = useState<boolean>(false);
     const [cursorPosition, setCursorPosition] = useState<number>(0);
     console.log(cursorPosition)
+    
 
     const emojiRef = useRef<HTMLDivElement>(null);
 
 
     const inputRef = useRef<HTMLTextAreaElement>(null);
 
-    const updateCursor = () => {
-        if (inputRef.current) {
-            setCursorPosition(inputRef.current.selectionStart ?? 0);
-        }
-    };
+    // const updateCursor = () => {
+    //     if (inputRef.current) {
+    //         setCursorPosition(inputRef.current.selectionStart ?? 0);
+    //     }
+    // };
 
 
 
+     const getLastMessage = displayMessages[displayMessages.length - 1 ]
+     console.log(getLastMessage, "getMassage test")
 
-    
+
+     useEffect(()=>{
+
+           if (!displayMessages) {
+               return ;
+           }
+
+           dispatch(setRecentMessage(getLastMessage?.message))
+
+     },[displayMessages])
+
     useEffect(() => {
         if (inputRef.current) {
             inputRef.current.style.height = "auto";
@@ -143,6 +158,7 @@ function Message() {
 
 
     const handleSendMessage = () => {
+        console.log("message clicked")
         socket.emit("sendMessage", {
             roomId: selectedUser.roomId,
             message: message,
@@ -153,75 +169,111 @@ function Message() {
     }
 
 
+    const Linkfy = ({ text }: { text?: string }) => {
+        const safeText = text ?? "";
+        const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
+        const parts = safeText.split(urlRegex);
+
+        return (
+            <>
+                {parts.map((part, index) => {
+                    if (part.match(urlRegex)) {
+                        const href = part.startsWith("http")
+                            ? part
+                            : `https://${part}`;
+
+                        return (
+                            <a
+                                key={index}
+                                href={href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-400 hover:text-blue-500 break-words"
+                            >
+                                {part}
+                            </a>
+                        );
+                    }
+                    return <span key={index}>{part}</span>;
+                })}
+            </>
+        );
+    };
+
+
+
+
+
 
 
     return (
-        <section className="flex flex-col h-full w-full   text-white bg-[#051222]">
+        <section className="flex flex-col h-full w-full text-white bg-[#051222]">
 
-            <header className="flex md:p-4 border-b border-gray-600 justify-between items-center bg-[#071624]">
+
+            <header className="flex p-4 border-b border-gray-600 justify-between items-center bg-[#071624]">
                 <div className="flex items-center gap-3">
                     <div
                         onClick={() => dispatch(closeChat())}
                         className="lg:hidden cursor-pointer p-1 hover:bg-gray-700 rounded-full"
+                        aria-label="Go back"
                     >
                         <MdArrowBack className="text-2xl text-[#bfc3ea]" />
                     </div>
+
                     <img
                         src={selectedUser.avatarUrl}
                         className="border border-gray-500 w-10 h-10 rounded-full object-cover"
-                        alt={selectedUser.userName}
+                        alt={`${selectedUser.userName} avatar`}
                     />
+
                     <div>
-                        <p className="font-semibold text-white">{selectedUser.userName}</p>
+                        <p className="font-semibold">{selectedUser.userName}</p>
                         <span className="text-xs text-green-400">online</span>
                     </div>
                 </div>
             </header>
 
 
-            <div className="flex-1 overflow-y-auto bg-[#051222]  md:p-4">
+            <div className="flex-1 overflow-y-auto  h-[70vh]  p-4 space-y-2 no-scrollbar">
+                {displayMessages.map((msg) => (
+                    <div
+                        key={msg._id}
+                        className={` w-fit max-w-[80%] break-words whitespace-pre-wrap text-xs md:text-base px-3 py-2 rounded-lg flex gap-2
+                     ${msg.senderId === User
+                                ? "ml-auto bg-[#09305e]"
+                                : "mr-auto bg-gray-700"
+                            }`}
+                    >
+                        <span className="flex-1">
+                            <Linkfy text={msg.message} />
+                        </span>
 
-
-                <div className="flex-1  justify-end  h-full overflow-y-auto no-scrollbar  p-4 space-y-2">
-                    {displayMessages.map((msg, index) =>
-                    (
-                        <div
-
-                            key={index}
-                            className={`w-fit text-xs md:text-base flex justify-between gap-3  px-3 py-2 rounded-lg 
-                                ${msg.senderId === User ? "ml-auto bg-[#09305e]  " : "mr-auto bg-gray-700 mt-auto"
-                                }`}
-                        >
-                            {msg.message}
-
-                            <span className="text-sm mt-3">
-                                {new Date(msg.createdAt).toLocaleTimeString("en-GB", {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                })}
-                            </span>
-
-                        </div>
-                    ))}
-                </div>
-
+                        <span className="text-[10px] md:text-xs opacity-70 self-end">
+                            {new Date(msg.createdAt).toLocaleTimeString("en-GB", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                            })}
+                        </span>
+                    </div>
+                ))}
             </div>
 
-
             <footer className="border-t border-gray-700 bg-[#1e1e1e] p-2 md:p-4 flex-shrink-0">
-                <div className="flex items-end gap-2 max-w-6xl mx-auto w-full relative">
+                <div className="flex items-end gap-2 max-w-6xl mx-auto w-full">
 
-                    <div className="relative flex-shrink-0">
+
+                    <div className="relative">
                         <button
                             type="button"
-                            onClick={() => setShowEmoji(!showEmoji)}
-                            className="emoji-toggle-btn p-2 rounded-full hover:bg-gray-700 bg-gray-600 transition"
+                            aria-label="Open emoji picker"
+                            onClick={() => setShowEmoji((p) => !p)}
+                            className="p-2 rounded-full hover:bg-gray-700 bg-gray-600"
                         >
                             😊
                         </button>
 
                         {showEmoji && (
-                            <div ref={emojiRef} className="absolute bottom-14 left-0 z-50 shadow-2xl">
+                            <div ref={emojiRef} className="absolute bottom-14 left-0 z-50">
                                 <EmojiPicker
                                     theme={Theme.DARK}
                                     onEmojiClick={handleEmojiClick}
@@ -231,35 +283,34 @@ function Message() {
                         )}
                     </div>
 
+
                     <textarea
                         ref={inputRef}
                         value={message}
-                        onChange={(e) => {
-                            setMessage(e.target.value);
-                            setCursorPosition(e.target.selectionStart ?? 0);
-                        }}
-                        onKeyUp={updateCursor}
-                        onClick={updateCursor}
+                        onChange={(e) => setMessage(e.target.value)}
                         placeholder="Type a message..."
-                        className="flex-1 min-h-[40px] max-h-36 bg-gray-800 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500 text-white transition-all resize-none overflow-y-auto"
+                        className="flex-1 max-h-36 bg-gray-800 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500 resize-none overflow-y-auto"
                         rows={1}
-                    ></textarea>
+                    />
 
-                    {/* Send Button */}
                     <button
                         type="button"
+                        aria-label="Send message"
                         disabled={!message.trim()}
                         onClick={handleSendMessage}
-                        className={`flex-shrink-0 p-3 rounded-full transition-all ${message.trim() ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-600 cursor-not-allowed opacity-50"
+                        className={`p-3 rounded-full transition
+                           ${message.trim()
+                                ? "bg-blue-600 hover:bg-blue-700"
+                                : "bg-gray-600 opacity-50 cursor-not-allowed"
                             }`}
                     >
-                        <MdSend className="text-xl text-white" />
+                        <MdSend className="text-xl" />
                     </button>
+
                 </div>
             </footer>
-
-
         </section>
+
     );
 }
 
