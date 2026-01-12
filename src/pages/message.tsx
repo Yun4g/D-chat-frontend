@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react";
 import { socket } from "@/lib/socket";
 import { setRecentMessage } from "@/store/slice/recentMessageSlice";
+import { Clipboard, ClipboardCheck,  } from "lucide-react";
 
 
 
@@ -34,8 +35,9 @@ function Message() {
     console.log(displayMessages, 'displayMessage')
     const [showEmoji, setShowEmoji] = useState<boolean>(false);
     const [cursorPosition, setCursorPosition] = useState<number>(0);
-    console.log(cursorPosition)
-    
+    console.log(cursorPosition);
+    const [ copiedId,  setCopiedId] = useState<string | null>(null)
+
 
     const emojiRef = useRef<HTMLDivElement>(null);
 
@@ -50,19 +52,19 @@ function Message() {
 
 
 
-     const getLastMessage = displayMessages[displayMessages.length - 1 ]
-     console.log(getLastMessage, "getMassage test")
+    const getLastMessage = displayMessages[displayMessages.length - 1]
+    console.log(getLastMessage, "getMassage test")
 
 
-     useEffect(()=>{
+    useEffect(() => {
 
-           if (!displayMessages) {
-               return ;
-           }
+        if (!displayMessages) {
+            return;
+        }
 
-           dispatch(setRecentMessage(getLastMessage?.message))
+        dispatch(setRecentMessage(getLastMessage?.message))
 
-     },[displayMessages])
+    }, [displayMessages])
 
     useEffect(() => {
         if (inputRef.current) {
@@ -87,6 +89,20 @@ function Message() {
             socket.off("loadMessages");
         };
     }, []);
+
+
+    const handleCopy = async(text: string, id: string)=> {
+            try {
+                await navigator.clipboard.writeText(text) 
+                setCopiedId(id)
+
+                setTimeout(() => {
+                     setCopiedId(null)
+                }, 1400);
+            } catch (error) {
+                 console.log(error, 'error copying text')
+            }
+    }
 
 
 
@@ -234,29 +250,56 @@ function Message() {
             </header>
 
 
-            <div className="flex-1 overflow-y-auto  h-[70vh]  p-4 space-y-2 no-scrollbar">
-                {displayMessages.map((msg) => (
-                    <div
-                        key={msg._id}
-                        className={` w-fit max-w-[80%] break-words whitespace-pre-wrap text-xs md:text-base px-3 py-2 rounded-lg flex gap-2
-                     ${msg.senderId === User
-                                ? "ml-auto bg-[#09305e]"
-                                : "mr-auto bg-gray-700"
-                            }`}
-                    >
-                        <span className="flex-1">
-                            <Linkfy text={msg.message} />
-                        </span>
+            <div className="flex-1 overflow-y-auto h-[70vh] p-4 space-y-2 no-scrollbar">
+                {displayMessages.map((msg) => {
+                    const isMine = msg.senderId === User;
+                    const copied = copiedId === msg._id;
 
-                        <span className="text-[10px] md:text-xs opacity-70 self-end">
-                            {new Date(msg.createdAt).toLocaleTimeString("en-GB", {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                            })}
-                        </span>
-                    </div>
-                ))}
+                    return (
+                        <div
+                            key={msg._id}
+                            className={`group relative max-w-[80%] w-fit break-words whitespace-pre-wrap
+                px-3 py-2 rounded-lg text-xs md:text-base
+                ${isMine ? "ml-auto bg-[#09305e]" : "mr-auto bg-gray-700"}`}
+                        >
+                           
+                            <div className="pr-3">
+                                <Linkfy text={msg.message} />
+                            </div>
+
+                     
+                            <div className="flex items-center justify-end gap-2 me-3">
+                                <span className="text-[10px] md:text-xs opacity-60">
+                                    {new Date(msg.createdAt).toLocaleTimeString("en-GB", {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                    })}
+                                </span>
+                            </div>
+
+                            <button
+                                onClick={() => handleCopy(msg.message, msg._id)}
+                                aria-label="Copy message"
+                                className={`
+                        absolute bottom-0 right-0
+                        p-1 rounded-md
+                        bg-black/30 backdrop-blur
+                        hover:bg-black/50
+                        transition
+                        opacity-100 md:opacity-0 md:group-hover:opacity-100
+                    `}
+                            >
+                                {copied ? (
+                                    <ClipboardCheck size={11} className="text-green-400" />
+                                ) : (
+                                    <Clipboard size={12} className="text-white/80" />
+                                )}
+                            </button>
+                        </div>
+                    );
+                })}
             </div>
+
 
             <footer className="border-t border-gray-700 bg-[#1e1e1e] p-2 md:p-4 flex-shrink-0">
                 <div className="flex items-end gap-2 max-w-6xl mx-auto w-full">
