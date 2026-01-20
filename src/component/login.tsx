@@ -1,30 +1,42 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { EyeClosed, EyeIcon, Lock, } from "lucide-react";
 import { motion } from 'framer-motion';
 import useLogin from '@/hooks/useLogin';
 import Modal from './Modal';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setUser } from '@/store/slice/userSlice';
 import { connectSocket } from '@/lib/socket';
 import axios from 'axios';
+import { setUser, UserState } from '@/store/slice/userSlice';
+
 
 
 
 
 function Login() {
-
+    const dispatch = useDispatch();
     const [showPassword, setShowPassword] = React.useState(false);
+    const [datares, setDatares] = React.useState<UserState>();
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [loading, setLoading] = React.useState(false);
     const [modalMessage, setModalMessage] = React.useState<string | null>(null);
     const [modalVariant, setModalVariant] = React.useState<'error' | 'success'>('error');
     const navigate = useNavigate();
-    const { login, error } = useLogin();
+    const { login, error, data } = useLogin();
+    console.log(data, 'data')
+
+
     console.log(error)
 
-    const dispatch = useDispatch();
+    useEffect(()=>{
+       if (data) {
+         setDatares(data)
+       }
+    },[data])
+
+
+    console.log(error)
 
 
 
@@ -34,39 +46,39 @@ function Login() {
         setModalMessage(null);
 
         try {
-            const res = await login(email, password);
-            if (!res.user || !res.user._id) throw new Error("Invalid user data");
-            setModalVariant('success');
-            setModalMessage('Login successful! Redirecting...');
+            await login(email, password);
 
-            connectSocket(res.user._id);
-            localStorage.setItem("userId", res.user._id);
-            localStorage.setItem("userData", JSON.stringify(res.user));
-            localStorage.setItem("token", res.token);
+            if (!datares) {
+                throw new Error("No user data returned");
+            }
+
+            connectSocket(datares._id);
 
             dispatch(setUser({
-                userId: res.user._id,
-                userName: res.user.userName,
-                email: res.user.email,
-                avatarUrl: res.user.avatarUrl,
+                _id: datares._id,
+                userName: datares.userName,
+                email: datares.email,
+                avatarUrl: datares.avatarUrl,
             }));
 
+            setModalVariant('success');
+            setModalMessage('Login successful! Redirecting...');
             setTimeout(() => navigate('/dashboard'), 1500);
+
         } catch (error: unknown) {
             let message = 'Login failed';
-
             if (axios.isAxiosError(error)) {
                 message = error.response?.data?.message || error.message;
             } else if (error instanceof Error) {
                 message = error.message;
             }
-
             setModalVariant('error');
             setModalMessage(message);
         } finally {
             setLoading(false);
         }
     };
+
 
     return (
         <motion.div className='flex justify-center items-center flex-col w-full '
@@ -75,6 +87,7 @@ function Login() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.6 }}
         >
+
             <h1 className='text-3xl text-white font-semibold '>Login</h1>
             <p className='text-sm text-gray-400 mt-2 mb-10'>Welcome back! Let’s pick up where you left off.</p>
 

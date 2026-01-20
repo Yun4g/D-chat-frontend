@@ -7,69 +7,68 @@ import ChangePassword from './component/changePassword'
 import ProtectedRoute from './protectedRoute'
 import ChatDashboard from './pages/chatDashboard'
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setUser } from './store/slice/userSlice';
+import {  useSelector } from 'react-redux';
 import { connectSocket, socket } from './lib/socket'
 import { RootState } from './store/store'
 
+
 function App() {
-  const dispatch = useDispatch();
+  
+
+
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
+    const handleInvite = (roomId: string) => {
+      console.log("Invited to chat room:", roomId);
+      socket.emit("joinRoom", roomId);
+    };
 
-    if (savedUser) {
-      dispatch(setUser(JSON.parse(savedUser)));
-    }
-  }, [dispatch]);
+    const handleAccepted = ({ roomId }: { roomId: string }) => {
+      console.log("Friend request accepted. Room:", roomId);
+      socket.emit("joinRoom", roomId);
+    };
 
-   useEffect(() => {
-      const handleInvite = (roomId: string) => {
-        console.log("Invited to chat room:", roomId);
-        socket.emit("joinRoom", roomId);
-      };
+    socket.on("inviteToRoom", handleInvite);
+    socket.on("friendRequestAccepted", handleAccepted);
 
-      const handleAccepted = ({ roomId }: { roomId: string }) => {
-        console.log("Friend request accepted. Room:", roomId);
-        socket.emit("joinRoom", roomId);
-      };
-
-      socket.on("inviteToRoom", handleInvite);
-      socket.on("friendRequestAccepted", handleAccepted);
-
-      return () => {
-        socket.off("inviteToRoom", handleInvite);
-        socket.off("friendRequestAccepted", handleAccepted);
-      };
-    }, []);
+    return () => {
+      socket.off("inviteToRoom", handleInvite);
+      socket.off("friendRequestAccepted", handleAccepted);
+    };
+  }, []);
 
 
-   const user = useSelector((state: RootState) => state.user.userId);
+  const user = useSelector((state: RootState) => state.user._id);
 
   useEffect(() => {
     if (user) {
-      connectSocket(user); 
+      connectSocket(user);
       console.log("Socket should now be connected");
     }
   }, [user]);
 
 
+
+  
+
+
+
   return (
 
 
-  <section className='bg-[#051222] w-full overflow-x-hidden h-full min-h-screen '>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Auth />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ChangePassword />} />
-        <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<ChatDashboard />} />
-        </Route>
+    <section className='bg-[#051222] w-full overflow-x-hidden h-full min-h-screen '>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Auth />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ChangePassword />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<ChatDashboard />} />
+          </Route>
 
-      </Routes>
-    </BrowserRouter>
-  </section>
+        </Routes>
+      </BrowserRouter>
+    </section>
 
   )
 }

@@ -1,3 +1,4 @@
+import api from "@/api/axios";
 import axios from "axios";
 import { useState } from "react";
 
@@ -13,14 +14,14 @@ const useLogin = () => {
     setError(null);
 
     try {
-      const res = await axios.post(
+      const res = await api.post(
         `${BASE_URL}/api/login`,
         { email, password },
-        { headers: { 'Content-Type': 'application/json' } }
+       { withCredentials: true } 
       );
 
-      setData(res.data);
-      return res.data;
+      setData(res.data.userData);
+      return res.data?.userData;
     } catch (err) {
       const message = axios.isAxiosError(err) && err.response?.data?.message
           ? err.response.data.message

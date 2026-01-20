@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { openChat } from "@/store/slice/uiSlice";
 import { setSelectedUser } from "@/store/slice/selectedUserSlice";
 import { setActiveTab } from "@/store/slice/activeTabsSlice";
+import axios from "axios";
 
 function ChatRequest() {
   const userId = localStorage.getItem("userId");
@@ -13,6 +14,28 @@ function ChatRequest() {
 
   const { friends, loading, error, getFriends } = useChat();
   const [search, setSearch] = useState<string>("");
+
+
+  
+  useEffect(() => {
+
+    const DebugFunc = async () => {
+      try {
+        const res = await axios.get(
+          "https://d-chat-backend-338h.onrender.com/debug-cookies",
+          { withCredentials: true }
+        );
+        console.log(res)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    setTimeout(() => {
+        DebugFunc()
+    }, 4000);
+
+  }, [])
 
   useEffect(() => {
     if (userId) {

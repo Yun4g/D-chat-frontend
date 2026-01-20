@@ -27,12 +27,12 @@ const useAcceptRequest = () => {
     setError(null);
     setSuccess(false);
 
-    const token = localStorage.getItem("token");
+
    
      const rawUserData = localStorage.getItem("userData");
 
 
-    if (!token || !userId || !rawUserData) {
+    if (  !rawUserData) {
       setError("User not authenticated");
       setLoading(false);
       return;
@@ -52,9 +52,7 @@ const useAcceptRequest = () => {
       const res = await axios.post<AcceptRequestResponse>(
         `${BASE_URL}/api/acceptRequest`, payload,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials: true
         }
       );
 

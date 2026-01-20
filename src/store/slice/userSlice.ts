@@ -1,18 +1,20 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface UserState {
-    userId: string;
+export interface UserState {
+    _id: string;
     userName: string;
     email: string;
     avatarUrl?: string;
+    IsAuthenticated?: boolean;
 }
 
 const initialState: UserState = {
-    userId: '',
+    _id: '',
     userName: '',
     email: '',
     avatarUrl: '',
+    IsAuthenticated : false
 };
 
 
@@ -25,13 +27,13 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         setUser(state, action: PayloadAction<UserState>) {
-            state.userId = action.payload.userId;   
+            state._id = action.payload._id;   
             state.userName = action.payload.userName;
             state.email = action.payload.email;
             state.avatarUrl = action.payload.avatarUrl;
         },
         clearUser(state) {
-            state.userId = '';
+            state._id = '';
             state.userName = '';
             state.email = '';
             state.avatarUrl = '';
