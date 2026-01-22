@@ -17,7 +17,7 @@ interface User {
 }
 
 function FindFriends() {
-  const loggedInUserId = useSelector((state: RootState) => state.user.userId);
+  const loggedInUserId = useSelector((state: RootState) => state.user._id);
 
   const {
     getFriends,
