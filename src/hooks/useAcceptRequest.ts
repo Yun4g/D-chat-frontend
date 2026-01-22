@@ -2,13 +2,8 @@ import { useState, useCallback } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import api from "@/api/axios";
 
-const BASE_URL = "https://d-chat-backend-338h.onrender.com";
-
-
-interface UserData {
-  email: string;
-}
 
 interface AcceptRequestResponse {
   status: "success";
@@ -20,27 +15,15 @@ const useAcceptRequest = () => {
   const [success, setSuccess] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-   const userId = useSelector((state : RootState)=>  state.user.userId)
+   const userId = useSelector((state : RootState)=>  state.user._id)
+    const email = useSelector((state : RootState)=>  state.user.email)
 
   const acceptRequest = useCallback(async (senderId: string) => {
     setLoading(true);
     setError(null);
     setSuccess(false);
 
-
-   
-     const rawUserData = localStorage.getItem("userData");
-
-
-    if (  !rawUserData) {
-      setError("User not authenticated");
-      setLoading(false);
-      return;
-    }
-
-    const userData: UserData = JSON.parse(rawUserData);
-     const email = userData.email;
-      
+  
      const payload = {
            senderId: senderId, 
           receiverId: userId,
@@ -49,11 +32,8 @@ const useAcceptRequest = () => {
 
      console.log(payload, 'payload')
     try {
-      const res = await axios.post<AcceptRequestResponse>(
-        `${BASE_URL}/api/acceptRequest`, payload,
-        {
-          withCredentials: true
-        }
+      const res = await api.post<AcceptRequestResponse>(
+        `/api/acceptRequest`, payload,
       );
 
       if (res.status === 200) {

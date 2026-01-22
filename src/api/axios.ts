@@ -6,23 +6,48 @@ const api = axios.create({
 });
 
 
-api.interceptors.response.use((response) => response,
+let isRefreshing = false;
+let failedQueue: Array<(token?: string) => void> = [];
+
+api.interceptors.response.use(
+  (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry ) {
+    if (originalRequest.url === "/api/refresh-token") {
+      return Promise.reject(error);
+    }
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
+
+      if (isRefreshing) {
+        // Wait for ongoing refresh to complete
+        return new Promise((resolve) => {
+          failedQueue.push(() => resolve(api(originalRequest)));
+        });
+      }
+
+      isRefreshing = true;
+
       try {
-        await api.post("/refresh-token");
+        await api.post("/api/refresh-token");
+      
+        failedQueue.forEach((callback) => callback());
+        failedQueue = [];
         return api(originalRequest);
       } catch (refreshError) {
+        failedQueue = [];
         return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
       }
     }
 
     return Promise.reject(error);
   }
 );
+
 
 
 export default api;

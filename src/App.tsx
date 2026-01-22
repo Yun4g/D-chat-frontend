@@ -12,6 +12,7 @@ import { connectSocket, socket } from './lib/socket'
 import { RootState } from './store/store'
 
 
+
 function App() {
   
 
@@ -37,7 +38,8 @@ function App() {
     };
   }, []);
 
-
+ const authenticated = useSelector((state: RootState) => state.user.IsAuthenticated);
+  console.log(authenticated, 'authBoolean');
   const user = useSelector((state: RootState) => state.user._id);
 
   useEffect(() => {
@@ -49,13 +51,9 @@ function App() {
 
 
 
-  
-
 
 
   return (
-
-
     <section className='bg-[#051222] w-full overflow-x-hidden h-full min-h-screen '>
       <BrowserRouter>
         <Routes>
@@ -65,7 +63,6 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<ChatDashboard />} />
           </Route>
-
         </Routes>
       </BrowserRouter>
     </section>

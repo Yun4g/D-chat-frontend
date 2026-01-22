@@ -2,8 +2,8 @@ import { useState, useCallback } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import api from "@/api/axios";
 
-const BASE_URL = "https://d-chat-backend-338h.onrender.com";
 
 interface SenderRequest {
   userId: string;
@@ -23,22 +23,17 @@ const useGetFriendRequest = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<FriendRequestResponse | null>(null);
-    const user =  useSelector((state: RootState) => state.user.userId);
-    const token = localStorage.getItem('token')
+    const user =  useSelector((state: RootState) => state.user._id);
+
+
+
   const getFriendRequests = useCallback(async () => {
     setLoading(true);
     setError(null);
 
-   
-
     try {
-      const res = await axios.get(
-        `${BASE_URL}/api/getRequest/${user}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const res = await api.get(
+        `/api/getRequest/${user}`,
       );
 
       setData(res.data);

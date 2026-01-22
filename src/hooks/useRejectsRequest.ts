@@ -1,12 +1,13 @@
 import { useState, useCallback } from "react";
 import axios from "axios";
+import api from "@/api/axios";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
-const BASE_URL = "https://d-chat-backend-338h.onrender.com";
 
 
-interface UserData {
-  email: string;
-}
+
+
 
  export interface RejectRequestResponse {
   status: "success";
@@ -17,39 +18,33 @@ const useRejectRequest = () => {
   const [success, setSuccess] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const userId = useSelector((state : RootState)=> state.user._id);
+  const  email = useSelector((state : RootState)=> state.user.email)
 
   const reJectRequest = useCallback(async (senderId: string) => {
     setLoading(true);
     setError(null);
     setSuccess(false);
 
-    const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId");
-     const rawUserData = localStorage.getItem("userData");
+  
+    
 
 
-    if (!token || !userId || !rawUserData) {
+    if ( !userId ) {
       setError("User not authenticated");
       setLoading(false);
       return;
     }
 
-    const userData: UserData = JSON.parse(rawUserData);
-     const email = userData.email;
-
+ 
     try {
-      const res = await axios.post<RejectRequestResponse>(
-        `${BASE_URL}/api/rejectRequest`,
+      const res = await api.post<RejectRequestResponse>(
+        `/api/rejectRequest`,
         {
           senderId,
           receiverId: userId,
           recieverEmail:  email
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
       );
 
       if (res.status === 200) {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "@/api/axios";
 
 export interface SendRequestPayload {
   senderId: string;
@@ -22,8 +22,8 @@ export const useSendFriendRequest = () => {
     setSuccess(null);
 
     try {
-      const res = await axios.post<SendRequestResponse>(
-        "https://d-chat-backend-338h.onrender.com/api/sendRequest",
+      const res = await api.post<SendRequestResponse>(
+        "/api/sendRequest",
         payload,
         {
           headers: {
@@ -35,11 +35,9 @@ export const useSendFriendRequest = () => {
       setSuccess(res.data.message);
       return true;
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Request failed");
-      } else {
+        console.log(err)
         setError("Something went wrong");
-      }
+   
       return false;
     } finally {
       setLoading(false);

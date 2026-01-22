@@ -6,7 +6,7 @@ export interface UserState {
     userName: string;
     email: string;
     avatarUrl?: string;
-    IsAuthenticated?: boolean;
+    IsAuthenticated: boolean;
 }
 
 const initialState: UserState = {
@@ -31,12 +31,15 @@ const userSlice = createSlice({
             state.userName = action.payload.userName;
             state.email = action.payload.email;
             state.avatarUrl = action.payload.avatarUrl;
+            state.IsAuthenticated = action.payload.IsAuthenticated;
         },
         clearUser(state) {
             state._id = '';
             state.userName = '';
             state.email = '';
             state.avatarUrl = '';
+            state.IsAuthenticated = false;
+    
         }
     }
 });

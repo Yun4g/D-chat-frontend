@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import api from "@/api/axios";
 
 export interface User {
   _id: string;
@@ -15,19 +16,14 @@ export const useFriends = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [friends, setFriends] = useState<User[]>([]);
-  const user =  useSelector((state: RootState) => state.user.userId);
+  const user =  useSelector((state: RootState) => state.user._id);
 
   const getFriends = async () => {
     setLoading(true);
     setError(null);
-     const token = localStorage.getItem('token');
+   
     try {
-      const res = await axios.get<{ status: string; users: User[] }>(`https://d-chat-backend-338h.onrender.com/api/getfriends/${user}`, 
-          {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const res = await api.get<{ status: string; users: User[] }>(`/api/getfriends/${user}`, 
       );
 
       if (res.data && res.data.users) {

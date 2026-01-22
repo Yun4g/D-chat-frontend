@@ -1,5 +1,5 @@
 import {  useDispatch, useSelector } from "react-redux";
-import { Navigate, Outlet } from "react-router-dom";
+import {  Navigate, Outlet } from "react-router-dom";
 import { RootState } from "./store/store";
 import { useEffect } from "react";
 import { connectSocket } from "./lib/socket";
@@ -10,7 +10,7 @@ import api from "./api/axios";
 function ProtectedRoute() {
  
   const authenticated = useSelector((state: RootState) => state.user.IsAuthenticated);
-  console.log(authenticated);
+  console.log(authenticated, 'authBoolean');
   const dispatch = useDispatch()
 
 
@@ -18,32 +18,33 @@ function ProtectedRoute() {
 
   const getHyrationData = async () => {
       try {
-        const res = await api.get('https://d-chat-backend-338h.onrender.com/api/me',
-          {
-            withCredentials: true,
-          }
-        );
-        const user = res.data.user;
+        const res = await api.get('/api/me', );
+        const user = res.data?.user;
+        
+        if (!user || !user._id) {
+          console.log('No user data from /api/me, keeping existing state');
+          return;
+        }
   
         connectSocket(user._id);
-  
-  
         dispatch(setUser({
           _id: user._id,
-          userName: user.userName,
-          email: user.email,
-          avatarUrl: user.avatarUrl,
+          userName: user.userName || '',
+          email: user.email || '',
+          avatarUrl: user.avatarUrl || '',
           IsAuthenticated: true
         }));
       } catch (error) {
-        console.log(error);
-        dispatch(setUser({
-          _id: '',
-          userName: '',
-          email: '',
-          avatarUrl: '',
-          IsAuthenticated: false
-        }));
+        console.log('Error fetching user data:', error);
+        if (!authenticated) {
+          dispatch(setUser({
+            _id: '',
+            userName: '',
+            email: '',
+            avatarUrl: '',
+            IsAuthenticated: false
+          }));
+        }
   
       }
     }
@@ -52,9 +53,9 @@ function ProtectedRoute() {
       getHyrationData();
     }, [])
 
-  if (!authenticated) {
-    return <Navigate to="/" replace />;
-  };
+   if (!authenticated) {
+     return <Navigate to="/" replace />;
+   };
 
 
   return <Outlet />;

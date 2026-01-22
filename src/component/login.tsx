@@ -1,42 +1,27 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { EyeClosed, EyeIcon, Lock, } from "lucide-react";
 import { motion } from 'framer-motion';
 import useLogin from '@/hooks/useLogin';
 import Modal from './Modal';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, } from 'react-redux';
 import { connectSocket } from '@/lib/socket';
 import axios from 'axios';
-import { setUser, UserState } from '@/store/slice/userSlice';
-
-
-
+import { setUser,} from '@/store/slice/userSlice';
 
 
 function Login() {
     const dispatch = useDispatch();
     const [showPassword, setShowPassword] = React.useState(false);
-    const [datares, setDatares] = React.useState<UserState>();
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [loading, setLoading] = React.useState(false);
     const [modalMessage, setModalMessage] = React.useState<string | null>(null);
     const [modalVariant, setModalVariant] = React.useState<'error' | 'success'>('error');
     const navigate = useNavigate();
-    const { login, error, data } = useLogin();
-    console.log(data, 'data')
+    const { login, error, } = useLogin();
+     console.log(error, 'loginErrorHook');
 
-
-    console.log(error)
-
-    useEffect(()=>{
-       if (data) {
-         setDatares(data)
-       }
-    },[data])
-
-
-    console.log(error)
 
 
 
@@ -46,21 +31,25 @@ function Login() {
         setModalMessage(null);
 
         try {
-            await login(email, password);
+            const user = await login(email, password); 
+            console.log('Logged in user - raw response:', user);
+            
+            const userId = user._id || user.userId;
+            console.log('Using userId:', userId);
 
-            if (!datares) {
-                throw new Error("No user data returned");
-            }
+            connectSocket(userId);
 
-            connectSocket(datares._id);
-
-            dispatch(setUser({
-                _id: datares._id,
-                userName: datares.userName,
-                email: datares.email,
-                avatarUrl: datares.avatarUrl,
-            }));
-
+            const userPayload = {
+                _id: userId,
+                userName: user.userName || '',
+                email: user.email || '',
+                avatarUrl: user.avatarUrl || '',
+                IsAuthenticated: true     
+            };
+            
+            console.log('Dispatching user payload:', userPayload);
+            dispatch(setUser(userPayload));
+            
             setModalVariant('success');
             setModalMessage('Login successful! Redirecting...');
             setTimeout(() => navigate('/dashboard'), 1500);
@@ -73,7 +62,8 @@ function Login() {
                 message = error.message;
             }
             setModalVariant('error');
-            setModalMessage(message);
+            setModalMessage(message  );
+
         } finally {
             setLoading(false);
         }

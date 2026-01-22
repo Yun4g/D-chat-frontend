@@ -1,7 +1,9 @@
 import { useState, useCallback } from "react";
-import axios, { AxiosError } from "axios";
-import { useDispatch } from "react-redux";
+import  { AxiosError } from "axios";
+import { useDispatch, useSelector } from "react-redux";
 import { setNotificationsData } from "@/store/slice/notificationSlice";
+import api from "@/api/axios";
+import { RootState } from "@/store/store";
 
 interface Notification {
   _id: string;
@@ -24,10 +26,10 @@ export const useNotifications = (): UseNotificationsReturn => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const dispatch = useDispatch();
+   const userId = useSelector((state: RootState)=> state.user._id)
 
   const getNotifications = useCallback(async () => {
-    const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId");
+   
 
     
     if (!userId || userId.includes('"')) {
@@ -39,13 +41,8 @@ export const useNotifications = (): UseNotificationsReturn => {
     setError(null);
 
     try {
-      const res = await axios.get<{ notifications: Notification[] }>(
-        `https://d-chat-backend-338h.onrender.com/api/notification/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const res = await api.get<{ notifications: Notification[] }>(
+        `/api/notification/${userId}`,
       );
 
       setNotifications(res.data.notifications);
