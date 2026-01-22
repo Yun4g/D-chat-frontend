@@ -22,7 +22,7 @@ interface ChatMessage {
 
 function Message() {
     const selectedUser = useSelector((state: RootState) => state.selectedUser.selectedUser);
-    const User = useSelector((state: RootState) => state.user.userId);
+    const User = useSelector((state: RootState) => state.user._id);
     console.log(User, 'usrOId')
     console.log('selectedUser', selectedUser);
     const dispatch = useDispatch();

@@ -2,14 +2,15 @@ import { FriendsType, useChat } from "@/hooks/useChat";
 import React, { useEffect, useState } from "react";
 import { MdSearch, MdErrorOutline, MdPersonOff, MdPersonAdd } from "react-icons/md";
 import LoadingSkeleton from "./loadingSkeleton";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { openChat } from "@/store/slice/uiSlice";
 import { setSelectedUser } from "@/store/slice/selectedUserSlice";
 import { setActiveTab } from "@/store/slice/activeTabsSlice";
-import axios from "axios";
+import { RootState } from "@/store/store";
+
 
 function ChatRequest() {
-  const userId = localStorage.getItem("userId");
+  const userId =  useSelector((state: RootState) => state.user._id);
   const dispatch = useDispatch();
 
   const { friends, loading, error, getFriends } = useChat();
@@ -17,25 +18,7 @@ function ChatRequest() {
 
 
   
-  useEffect(() => {
 
-    const DebugFunc = async () => {
-      try {
-        const res = await axios.get(
-          "https://d-chat-backend-338h.onrender.com/debug-cookies",
-          { withCredentials: true }
-        );
-        console.log(res)
-      } catch (error) {
-        console.log(error)
-      }
-    }
-
-    setTimeout(() => {
-        DebugFunc()
-    }, 4000);
-
-  }, [])
 
   useEffect(() => {
     if (userId) {

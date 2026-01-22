@@ -15,9 +15,6 @@ import { RootState } from './store/store'
 
 function App() {
   
-
-
-
   useEffect(() => {
     const handleInvite = (roomId: string) => {
       console.log("Invited to chat room:", roomId);

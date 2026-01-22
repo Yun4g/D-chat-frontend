@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '@/api/axios';
 import React from 'react';
 
 
@@ -22,16 +22,10 @@ export const useChat = () => {
 
   const getFriends = async (userId: string) => {
     console.log('Fetching friends for user:', userId);
-    const token = localStorage.getItem('token');
+  
     try {
       setLoading(true);
-      const res = await axios.get(`https://d-chat-backend-338h.onrender.com/api/friendsList/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await api.get(`/api/friendsList/${userId}` );
       if (res) {
         setLoading(false);
         setFriends(res.data.friends);
