@@ -10,7 +10,7 @@ import api from "./api/axios";
 function ProtectedRoute() {
  
   const authenticated = useSelector((state: RootState) => state.user.IsAuthenticated);
-  console.log(authenticated, 'authBoolean');
+
   const dispatch = useDispatch()
 
 
@@ -19,7 +19,8 @@ function ProtectedRoute() {
   const getHyrationData = async () => {
       try {
         const res = await api.get('/api/me', );
-        const user = res.data?.user;
+        const user = res?.data;
+        console.log('Fetched user data:', user);
         
         if (!user || !user._id) {
           console.log('No user data from /api/me, keeping existing state');
@@ -34,6 +35,7 @@ function ProtectedRoute() {
           avatarUrl: user.avatarUrl || '',
           IsAuthenticated: true
         }));
+       
       } catch (error) {
         console.log('Error fetching user data:', error);
         if (!authenticated) {
@@ -48,7 +50,7 @@ function ProtectedRoute() {
   
       }
     }
-  
+    console.log(authenticated, 'auth')
     useEffect(() => {
       getHyrationData();
     }, [])
